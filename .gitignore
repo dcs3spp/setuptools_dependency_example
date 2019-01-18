@@ -1,0 +1,6 @@
+.idea/
+.eggs/
+.DS_Store
+parent/src/*.egg-info/
+child/src/*.egg-info/
+
