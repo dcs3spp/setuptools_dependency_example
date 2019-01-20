@@ -1,7 +1,7 @@
 Overview
 ========
 
-This is a temp project to serve as an example project for a comp.lan.python forum post
+This is a temp project to serve as an example project for a comp.lang.python forum post
 
 I have been previously used devpi as a solution to the problem outlined below. I had configured setup.cfg                                                  
 [easy_install] and pip.conf to reference devpi server.
