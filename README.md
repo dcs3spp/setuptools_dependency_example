@@ -67,5 +67,78 @@ If I want to have a Python private project, referencing other private project(s)
 
 Confusion, stems from the fact that pip and setuptools dependencies are not synchronised, i.e. setuptools will break if PEP508 urls are listed for install_requires. Presumably the approach is to use either pip or setuptools but not both? 
 
+**Update**
+==========
+From what I understand setuptools offers *dependency_links* as a list of dependency urls. In the example below, the *pyramid_core* package is an external dependency. 
 
+I am currently using pip 18.1. pip has an option *--process-dependencies* that issues a deprecation warning. The following *setup.py* example works with both setuptools (python setup develop etc.) and pip (pip install -e . and pip install .).
 
+The example *setup.py* below can be installed using both setuptools and pip as follows:
+```
+python setup.py develop
+python setup.py install
+pip install -e . --process-dependency-links
+pip install .
+```
+
+**setup.py that is compatible with both setuptools and pip 18.1**
+=================================================================
+```
+import os
+
+from setuptools import setup, find_packages
+
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, 'README.md')) as f:
+    README = f.read()
+with open(os.path.join(here, 'CHANGES.md')) as f:
+    CHANGES = f.read()
+
+dependencies = [
+    'git+ssh://git@gitlab.com/dcs3spp/plantoeducate_core.git#egg=pyramid_core-0',
+]
+
+requires = [
+    'parent',
+    'pyramid_core',
+]
+
+setup_requires = [
+]
+
+tests_require = [
+    'pytest',
+    'pytest-cov',
+]
+
+setup(name='parent',
+      version='0.1',
+      description='parent',
+      long_description=README + '\n\n' + CHANGES,
+      classifiers=[
+          "Programming Language :: Python",
+      ],
+      author='dcs3spp',
+      author_email='myemail@outlook.com',
+      url='',
+      keywords='setuptools',
+      packages=find_packages('src'),
+      package_dir={'': 'src'},
+      include_package_data=True,
+      zip_safe=False,
+      extras_require={
+          'testing': tests_require,
+      },
+      install_requires=requires,
+      dependency_links=dependencies,
+      setup_requires=setup_requires,
+      tests_require=tests_require,
+)
+```
+
+However, pip 18.1 support reading pep508 direct urls from install_requires. In future release there are plans to deprecate the --process-dependency-links pip install option:
+- https://github.com/pypa/pip/issues/4187
+- https://github.com/pypa/pip/pull/4175
+If I use a PEP508 direct url in install_requires pip works but this fails when installing using setuptools 40.6.3, e.g. python setup.py develop or python setup.py install.
+
+Will setuptools support direct pep508 urls in install_requires in the future also? 
