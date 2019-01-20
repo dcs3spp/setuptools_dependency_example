@@ -48,4 +48,24 @@ mind that the child dependency is likely to be used in future private projects.
 For example, can setuptools be configured to pull in child from a separate git repository
 when running ```python setup.py develop``` from parent folder?
 
+Findings
+========
+A PEP508 url for a git repository can be used in *install_requires* of *setup.py*. An example is listed below.
+```
+requires = [
+    'parent',
+    'kinto-http@git+https://github.com/Kinto/kinto-http.py',
+]
+...
+install_requires=requires
+```
+The package can then be installed with pip, using ```pip install -e . or pip install .```
+
+However, installation with setuptools is then broken, i.e. ```python setup.py develop``` and ```python setup.py install``` fails. setuptools looks for packages in pypi indexes. To install using setuptools a devpi index would have to be installed and configured or packages would have to installed from a paid for pypi repository in the cloud. Alternatively, developers could manually install each private package dependency individually, prior to running ```python setup.py develop``` for the source package. Unless, there are alternative(s)?
+
+If I want to have a Python private project, referencing other private project(s), available under source control and CI via gitlab.com, it seems that I can use the pip approach with PEP508 or use a requirements.txt file containing the git projects referenced as PEP508 urls, i.e. ```pip install -r requirements.txt```.
+
+Confusion, stems from the fact that pip and setuptools dependencies are not synchronised, i.e. setuptools will break if PEP508 urls are listed for install_requires. Presumably the approach is to use either pip or setuptools but not both? 
+
+
 
